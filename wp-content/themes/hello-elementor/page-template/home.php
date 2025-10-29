@@ -8,16 +8,17 @@ get_header();
 <link rel="stylesheet" href="<?php echo get_stylesheet_directory_uri(); ?>/posts.css">
 <script>
     jQuery(document).ready(function() {
-        jQuery("form").on("submit", handleChange); // pass a function reference
+        jQuery("#category, #post_tag, #posts_count").on("input", handleChange); // pass a function reference
     });
     function handleChange(e) {
+            const form = this.closest("form");
             e.preventDefault();
-            let category_id = jQuery(this).find("#category").val().trim();
-            let tag_id = jQuery(this).find("#post_tag").val().trim();
-            let category = jQuery(this).find("#category option:selected").text().trim();
-            let tag = jQuery(this).find("#post_tag option:selected").text().trim();
+            let category_id = jQuery(form).find("#category").val().trim();
+            let tag_id = jQuery(form).find("#post_tag").val().trim();
+            let category = jQuery(form).find("#category option:selected").text().trim();
+            let tag = jQuery(form).find("#post_tag option:selected").text().trim();
  
-            let posts_count = parseInt(jQuery(this).find("#posts_count").val(), 10) || 0//returns the first truthy value whereas ?? will return the first value that is not null or undefined;
+            let posts_count = parseInt(jQuery(form).find("#posts_count").val(), 10) || 0//returns the first truthy value whereas ?? will return the first value that is not null or undefined;
             let term = "";
 
             if (category_id.length > 0 && (!tag_id || tag_id === "")) {
@@ -67,11 +68,12 @@ get_header();
             xhr.open('POST', url, true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhr.onload = function() {
+                let html = `<h2 class="archive-title">${term}</h2>`;
                 if (this.status == 200) {
                     console.log(xhr.responseText);
                     const response = JSON.parse(xhr.responseText);
                     if (response.success) {
-                        let html = `<h2 class="archive-title">${term}</h2><div class="posts">`;
+                        let html = `<div class="posts">`;
                         response.data.forEach(
                             function(post) {
                                 html += `
@@ -80,9 +82,7 @@ get_header();
                                     ${post.thumbnail}
                                 </div>
                                 <div class="post-content">
-                                    <h2 class="post-title">
-                                        <a href="${post.link}">${post.title}</a>
-                                    </h2>
+                                    
                                     <div class="post-meta">
                                         <span class="post-date">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M128 0c17.7 0 32 14.3 32 32l0 32 128 0 0-32c0-17.7 14.3-32 32-32s32 14.3 32 32l0 32 32 0c35.3 0 64 28.7 64 64l0 288c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 128C0 92.7 28.7 64 64 64l32 0 0-32c0-17.7 14.3-32 32-32zM64 240l0 32c0 8.8 7.2 16 16 16l32 0c8.8 0 16-7.2 16-16l0-32c0-8.8-7.2-16-16-16l-32 0c-8.8 0-16 7.2-16 16zm128 0l0 32c0 8.8 7.2 16 16 16l32 0c8.8 0 16-7.2 16-16l0-32c0-8.8-7.2-16-16-16l-32 0c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16l0 32c0 8.8 7.2 16 16 16l32 0c8.8 0 16-7.2 16-16l0-32c0-8.8-7.2-16-16-16l-32 0zM64 368l0 32c0 8.8 7.2 16 16 16l32 0c8.8 0 16-7.2 16-16l0-32c0-8.8-7.2-16-16-16l-32 0c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16l0 32c0 8.8 7.2 16 16 16l32 0c8.8 0 16-7.2 16-16l0-32c0-8.8-7.2-16-16-16l-32 0zm112 16l0 32c0 8.8 7.2 16 16 16l32 0c8.8 0 16-7.2 16-16l0-32c0-8.8-7.2-16-16-16l-32 0c-8.8 0-16 7.2-16 16z"/></svg>
@@ -109,14 +109,15 @@ get_header();
                             </article>`;
                             });
                         html += '</div>'
-
-                        jQuery("#dynamic-content").html(html);
                     } else {
-                        jQuery("#dynamic-content").html(`<p>${response.data}</p>`);
+                        html += `<p>${response.data}</p>`;
                     }
+                    jQuery("#dynamic-content").html(html);
                 } else {
-                    jQuery("#dynamic-content").html(`<p>${xhrr.status}</p>`);
+                    html += `<p>${xhrr.status}</p>`;
                 }
+                jQuery("#dynamic-content").html();
+
             }
 
             xhr.send(data.toString());
@@ -164,12 +165,10 @@ $output .= '
                     </select>
                     <label for="posts_count">No. of posts</label>
                     <input type="number" name="posts_count" id="posts_count" min="0">
-                    <input type="submit" value="Submit">
+                    <!--<input type="submit" value="Submit">-->
                 </form>
-            </div>
-        </div>';
-
-$output .= "<div id='dynamic-content' class='container'></div>";
+                <div id="dynamic-content"></div>
+            </div>';
 
 echo $output;
 ?>
