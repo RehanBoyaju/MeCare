@@ -293,19 +293,37 @@ function load_posts_ajax(){
 	if(!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'],'ajax_posts_nonce')){
 		wp_send_json_error('Invalid nonce');
 	}
-	$term_id = intval($_POST['term_id']);
-	$taxonomy = sanitize_text_field($_POST['taxonomy']);
+	$tag_id = intval($_POST['tag_id']);
+	$category_id = intval($_POST['category_id']);
+	$count = intval($_POST['count']);
 
-	$posts_per_page = -1;
-	
-	$args = [
-		'posts_per_page'=>$posts_per_page,
-		'tax_query'=>[[
-			'taxonomy'=>$taxonomy,
+	$tax_query = array('relation'=>'AND');
+
+	if($category_id > 0){
+		$tax_query[] = [
+			'taxonomy'=>'category',
 			'field'=>'term_id',
-			'terms'=>$term_id,
-		],],
+			'terms'=>$category_id,
+		];
+	}
+
+	if($tag_id > 0){
+		$tax_query[] = [
+			'taxonomy'=>'post_tag',
+			'field'=>'term_id',
+			'terms'=>$tag_id,
+		];
+	}
+
+	//if both category and tag is empty, we just retrieve all the posts
+	$args = [
+		'post_type'=>'post',
+		'posts_per_page'=>$count,
 	];
+
+	if(count($tax_query)>1){// if we have either category and tag then add tax_query to the associative array
+		$args['tax_query']=$tax_query;
+	}
 
 	$query = new WP_Query($args);
 

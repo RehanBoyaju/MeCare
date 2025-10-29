@@ -5,15 +5,36 @@
  */
 get_header();
 ?>
-<link rel="stylesheet" href="<?php echo get_stylesheet_directory_uri();?>/posts.css">
+<link rel="stylesheet" href="<?php echo get_stylesheet_directory_uri(); ?>/posts.css">
 <script>
     jQuery(document).ready(function() {
 
-        jQuery(".list li a").on("click", function(e) {
+        jQuery("form").on("submit", function(e) {
             e.preventDefault();
-            let term_id = jQuery(this).parent().data("id");
-            let taxonomy = jQuery(this).closest(".list").data("taxonomy");
-            let term = jQuery(this).text();
+            let category_id = jQuery(this).find("#category").val().trim();
+            let tag_id = jQuery(this).find("#post_tag").val().trim();
+            let category = jQuery(this).find("#category option:selected").text().trim();
+            let tag = jQuery(this).find("#post_tag option:selected").text().trim();
+
+            let posts_count = parseInt(jQuery(this).find("#posts_count").val(), 10);
+            let term = "";
+
+            if (category_id.length > 0 && (!tag_id || tag_id === "")) {
+                term = category;
+                tag_id = 0;
+            } else if (category_id.length > 0) {
+                term = category + " x " + tag;
+            } else if (category_id.length === 0 && tag_id.trim().length > 0) {
+                term = tag;
+                category_id = 0;
+            }
+
+            if (isNaN(posts_count)) {
+                posts_count = 0;
+            }
+
+
+
 
             /*jQuery.ajax({
                 url:'<?php echo admin_url("admin-ajax.php"); ?>',
@@ -45,8 +66,9 @@ get_header();
             const url = '<?php echo admin_url("admin-ajax.php"); ?>';
             const data = new URLSearchParams({
                 action: 'load_posts',
-                term_id: term_id,
-                taxonomy: taxonomy,
+                tag_id: tag_id,
+                category_id: category_id,
+                count: posts_count,
                 nonce: '<?php echo wp_create_nonce("ajax_posts_nonce"); ?>'
             });
             xhr.open('POST', url, true);
@@ -59,7 +81,7 @@ get_header();
                         let html = `<h2 class="archive-title">${term}</h2><div class="posts">`;
                         response.data.forEach(
                             function(post) {
-                            html += `
+                                html += `
                             <article class="post" id="post-${post.id}" <?php post_class('archive-item') ?>>
                                 <div class="post-thumbnail">
                                     ${post.thumbnail}
@@ -92,8 +114,8 @@ get_header();
                                     </div>
                                 </div>
                             </article>`;
-                        });
-                        html+='</div>'
+                            });
+                        html += '</div>'
 
                         jQuery("#dynamic-content").html(html);
                     } else {
@@ -115,40 +137,41 @@ $categories = get_categories(array(
     'number' => 0,      // get all categories
     'hide_empty' => false // include categories even if they have no posts
 ));
+
 $tags = get_tags(array(
     'number' => 0,      // get all categories
     'hide_empty' => false // include categories even if they have no posts
 ));
 
 
-$output ='<div class="taxonomy-page container">
-            <div class="list" data-taxonomy="category">
-                <h2>Categories</h2>
+$output = '<div class="taxonomy-page container">
                 <form>
-                <label for="category">Select category"</label>
-                <select name="category" id="category">';
-                foreach ($categories as $category) {
-                    $link = get_category_link($category);
-                    $output .= '
-                    <option data-id="' . $category->term_id . '">
-                        <a href="' . esc_url($link) . '">' . esc_html($category->name) . '</a>
-                    </option>';
-                }
-                $output .= '
-                </ul>
-            </div>
-            <div class="list" data-taxonomy="post_tag">
-                <h2>Tags</h2>
-                <ul>';
-                foreach ($tags as $tag) {
-                    $link = get_tag_link($tag);
-                    $output .= '
-                    <li data-id="' . $tag->term_id . '">
-                        <a href="' . esc_url($link) . '">' . esc_html($tag->name) . '</a>
-                    </li>';
-                }
-                $output .= '
-                </ul>
+                    <label for="category">Category: </label>
+                    <select name="category" id="category">
+                        <option value="">Select a category</option>';
+foreach ($categories as $category) {
+    $output .= '
+                        <option value="' . $category->term_id . '">
+                            ' . esc_html($category->name) . '
+                        </option>';
+}
+$output .= '
+                    </select>
+
+                    <label for="post_tag">Tag: </label>
+                    <select name="post_tag" id="post_tag">
+                        <option value="">Select a tag</option>';
+foreach ($tags as $tag) {
+    $output .= '
+                        <option value="' . $tag->term_id . '">' .
+        esc_html($tag->name)
+        . '</option>';
+}
+$output .= '
+                    </select>
+                    <label for="posts_count">No. of posts</label>
+                    <input type="number" name="posts_count" id="posts_count" min="0">
+                    <input type="submit" value="Submit">
                 </form>
             </div>
         </div>';
