@@ -8,15 +8,16 @@ get_header();
 <link rel="stylesheet" href="<?php echo get_stylesheet_directory_uri(); ?>/posts.css">
 <script>
     jQuery(document).ready(function() {
-
-        jQuery("form").on("submit", function(e) {
+        jQuery("form").on("submit", handleChange); // pass a function reference
+    });
+    function handleChange(e) {
             e.preventDefault();
             let category_id = jQuery(this).find("#category").val().trim();
             let tag_id = jQuery(this).find("#post_tag").val().trim();
             let category = jQuery(this).find("#category option:selected").text().trim();
             let tag = jQuery(this).find("#post_tag option:selected").text().trim();
-
-            let posts_count = parseInt(jQuery(this).find("#posts_count").val(), 10);
+ 
+            let posts_count = parseInt(jQuery(this).find("#posts_count").val(), 10) || 0//returns the first truthy value whereas ?? will return the first value that is not null or undefined;
             let term = "";
 
             if (category_id.length > 0 && (!tag_id || tag_id === "")) {
@@ -28,14 +29,6 @@ get_header();
                 term = tag;
                 category_id = 0;
             }
-
-            if (isNaN(posts_count)) {
-                posts_count = 0;
-            }
-
-
-
-
             /*jQuery.ajax({
                 url:'<?php echo admin_url("admin-ajax.php"); ?>',
                 type:'POST',
@@ -128,8 +121,8 @@ get_header();
 
             xhr.send(data.toString());
 
-        })
-    });
+        }
+    
 </script>
 
 <?php
