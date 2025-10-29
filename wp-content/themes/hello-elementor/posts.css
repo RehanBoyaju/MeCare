@@ -1,0 +1,108 @@
+a {
+    color: black;
+}
+
+a:hover {
+    color: black;
+}
+
+.posts {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 50px;
+}
+
+.post {
+    min-width: 300px;
+    flex: 0 0 30%;
+    border-radius: 30px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+.post img {
+    width: 100%;
+}
+
+.post-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px 15px 40px 15px;
+    gap: 15px;
+}
+
+.post h2 {
+    text-align: center;
+    margin: 0px;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 25px;
+}
+
+.post .post-excerpt {
+    text-align: justify;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.post-meta {
+    display: flex;
+    justify-content: space-between;
+}
+
+.post-meta span {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.post-meta svg {
+    width: 15px;
+}
+
+.button {
+    display: flex;
+    justify-content: center;
+}
+
+.button a {
+    background: linear-gradient(90deg, #1E0B9B 0%, #1696E7 100%);
+    color: white;
+    border-radius: 23px;
+    padding: 5px 5px 5px 30px;
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    gap: 20px;
+
+}
+
+.button a:hover {
+    color: white;
+    background: linear-gradient(90deg, #1E0B9B 0%);
+
+}
+
+.button .icon {
+    background-color: #07ccec;
+    border-radius: 50%;
+
+}
+
+.button svg {
+    display: block;
+    margin: 0 auto;
+    height: 15px;
+    width: 15px;
+    fill: white;
+    margin: 10px;
+}
+
+.button-text {
+    margin-bottom: 5px;
+}
