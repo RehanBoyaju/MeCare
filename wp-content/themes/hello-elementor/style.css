@@ -35,5 +35,28 @@
 	list-style-position:inside;
 	padding:0px 10px;
 }
-
+form{
+	
+	margin: 50px 5px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	
+	
+}
+.form-container{
+	width: 500px;
+	padding: 20px;
+	display: flex;
+	gap: 15px;
+	flex-direction: column;
+	border-radius: 10px;
+	background-color: #f6f2f2;
+}
+.input-fields{
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	
+}
 
